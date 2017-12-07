@@ -49,6 +49,7 @@ namespace Memberships.Entities
         [DisplayName("Is Free")]
         public bool IsFree { get; set; }
 
+        [DisplayName("Item Types")]
         public virtual ICollection<ItemType> ItemTypes { get; set; }
 
         public virtual ICollection<Section> Sections { get; set; }
