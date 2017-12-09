@@ -40,7 +40,7 @@ namespace Memberships.Areas.Admin.Controllers
         // GET: Admin/Item/Create
         public ActionResult Create()
         {
-            var modell = new Item()
+            var model = new Item()
             {
                 ItemTypes = db.ItemTypes.ToList(),
                 Parts = db.Parts.ToList(),
@@ -48,7 +48,7 @@ namespace Memberships.Areas.Admin.Controllers
             };
 
 
-            return View(modell);
+            return View(model);
         }
 
         // POST: Admin/Item/Create
@@ -75,11 +75,17 @@ namespace Memberships.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            
             Item item = await db.Items.FindAsync(id);
+           
             if (item == null)
             {
                 return HttpNotFound();
             }
+            item.ItemTypes = await db.ItemTypes.ToListAsync();
+            item.Parts = await db.Parts.ToListAsync();
+            item.Sections = await db.Sections.ToListAsync();
+
             return View(item);
         }
 
