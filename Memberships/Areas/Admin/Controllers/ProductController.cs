@@ -23,7 +23,8 @@ namespace Memberships.Areas.Admin.Controllers
         {
             var products = await db.Products.ToListAsync();
             var model = await ConversionExtensions.Convert(products, db);
-
+            //var products = await db.Products.ToListAsync();
+            //var model = await products.Convert(db);
             return View(model);
         }
 
@@ -39,7 +40,9 @@ namespace Memberships.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-            return View(product);
+
+            var model = await product.Convert(db);
+            return View(model);
         }
 
         // GET: Admin/Product/Create

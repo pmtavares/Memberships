@@ -35,14 +35,14 @@ namespace Memberships.Areas.Admin.Models
         {
             get
             {
-                return ProductTypes == null || ProductTypes.Count.Equals(0) ? string.Empty : ProductTypes.First(pt => pt.Id.Equals(ProductLinkTextId)).Title;
+                return ProductTypes == null || ProductTypes.Count.Equals(0) ? string.Empty : ProductTypes.First(pt => pt.Id.Equals(ProductTypeId)).Title; 
             }
 
         }
 
         public string ProductLinkText{
             get {
-                return ProductLinkTexts == null || ProductLinkTexts.Count.Equals(0) ? string.Empty : ProductLinkTexts.First(pt => pt.Id.Equals(ProductTypeId)).Title;
+                return ProductLinkTexts == null || ProductLinkTexts.Count.Equals(0) ? string.Empty : ProductLinkTexts.First(pt => pt.Id.Equals(ProductLinkTextId)).Title;
             }
 
         }
