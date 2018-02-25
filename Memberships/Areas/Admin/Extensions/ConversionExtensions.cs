@@ -13,7 +13,7 @@ namespace Memberships.Areas.Admin.Extensions
     public static class ConversionExtensions
     {
 
-        public static async Task<IEnumerable<ProductModel>> Convert(IEnumerable<Product> products, ApplicationDbContext db)
+        public static async Task<IEnumerable<ProductModel>> Convert(this IEnumerable<Product> products, ApplicationDbContext db)
         {
 
             if (products.Count().Equals(0))

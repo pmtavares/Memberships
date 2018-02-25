@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Data.Entity;
 using System.Threading.Tasks;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Memberships.Entities;
 using Memberships.Models;
 using Memberships.Areas.Admin.Extensions;
 using Memberships.Areas.Admin.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Memberships.Areas.Admin.Controllers
 {
@@ -22,9 +19,8 @@ namespace Memberships.Areas.Admin.Controllers
         public async Task<ActionResult> Index()
         {
             var products = await db.Products.ToListAsync();
-            var model = await ConversionExtensions.Convert(products, db);
-            //var products = await db.Products.ToListAsync();
-            //var model = await products.Convert(db);
+
+            var model = await products.Convert(db);
             return View(model);
         }
 
@@ -81,12 +77,17 @@ namespace Memberships.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             Product product = await db.Products.FindAsync(id);
             if (product == null)
             {
                 return HttpNotFound();
             }
-            return View(product);
+
+            var prod = new List<Product>();
+            prod.Add(product);
+            var productModel = await prod.Convert(db);
+            return View(productModel.First());
         }
 
         // POST: Admin/Product/Edit/5
