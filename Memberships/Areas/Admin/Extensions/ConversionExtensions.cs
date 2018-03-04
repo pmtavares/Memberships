@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Data.Entity;
+using System.Runtime.CompilerServices;
 using Memberships.Areas.Admin.Models;
 using System.Threading.Tasks;
 using Memberships.Entities;
 using Memberships.Models;
+using System.Transactions;
 
 namespace Memberships.Areas.Admin.Extensions
 {
@@ -93,6 +95,49 @@ namespace Memberships.Areas.Admin.Extensions
             };
 
             return model;
+        }
+
+        public static async Task<bool> CanChange(this ProductItem productitem, ApplicationDbContext db)
+        {
+            var oldPi = await db.ProductItems.CountAsync(pi => 
+                pi.ProductId.Equals(productitem.OldProductId) && pi.ItemId.Equals(productitem.OldItemId));
+            var newPi = await db.ProductItems.CountAsync(pi =>
+                pi.ProductId.Equals(productitem.ProductId) && pi.ItemId.Equals(productitem.ItemId));
+
+
+            return oldPi.Equals(1) && newPi.Equals(0);
+        }
+
+        public static async Task Change(this ProductItem productItem, ApplicationDbContext db)
+        {
+            var oldProductItem = await db.ProductItems.FirstOrDefaultAsync(pi =>
+                pi.ProductId.Equals(productItem.OldProductId) && pi.ItemId.Equals(productItem.OldItemId));
+            var newProductItem = await db.ProductItems.FirstOrDefaultAsync(pi =>
+                pi.ProductId.Equals(productItem.ProductId) && pi.ItemId.Equals(productItem.ItemId));
+
+            if (oldProductItem != null && newProductItem == null)
+            {
+                newProductItem = new ProductItem
+                {
+                    ItemId = productItem.ItemId,
+                    ProductId = productItem.ProductId
+                };
+            }
+
+            using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                try
+                {
+                    db.ProductItems.Remove(oldProductItem);
+                    db.ProductItems.Add(newProductItem);
+                    await db.SaveChangesAsync();
+                }
+                catch (Exception e)
+                {
+                    transaction.Dispose();
+                    throw;
+                }
+            }
         }
 
     }
